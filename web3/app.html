@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detectus - Bảng Điều Khiển Ứng Dụng</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Chakra Petch', sans-serif;
+            background-color: #0D1117;
+            color: #E6EDF3;
+            background-image:
+                linear-gradient(rgba(13, 17, 23, 0.98), rgba(13, 17, 23, 0.98));
+            overflow-x: hidden;
+        }
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: #58A6FF;
+            border-radius: 50%;
+            opacity: 0;
+            animation: animate-star 10s linear infinite;
+        }
+        @keyframes animate-star {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            20%, 80% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
+        }
+        .glass-card {
+            background-color: rgba(22, 27, 34, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 148, 158, 0.2);
+        }
+        .text-glow {
+            color: #58A6FF;
+            text-shadow: 0 0 8px #58A6FF60;
+        }
+        .loader {
+            border: 4px solid #30363d;
+            border-top: 4px solid #58A6FF;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            background-color: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 148, 158, 0.3);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay:not(.hidden) .modal-content {
+            transform: scale(1);
+        }
+        .web3-btn {
+            background: linear-gradient(90deg, #0052CC, #4C9AFF);
+            border: none;
+            box-shadow: 0 0 15px #4C9AFF80;
+            transition: all 0.3s ease;
+        }
+        .web3-btn:hover {
+            box-shadow: 0 0 25px #4C9AFFAA;
+            transform: translateY(-2px);
+        }
+        .web3-input {
+            background-color: #0D1117;
+            border: 1px solid #30363d;
+            color: #E6EDF3;
+        }
+        .web3-input:focus {
+            border-color: #58A6FF;
+            box-shadow: 0 0 0 3px #58A6FF30;
+        }
+        .progress-bar-bg {
+            background-color: #30363d;
+        }
+        .progress-bar-fg {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="background-animation"></div>
+    <div class="container mx-auto p-4 md:p-8 relative z-10">
+
+        <header class="text-center pt-8 pb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-glow leading-tight tracking-wider">BẢNG ĐIỀU KHIỂN DAPP</h1>
+            <p class="text-lg font-semibold mt-2 text-gray-300">Tương tác với hợp đồng Detectus</p>
+        </header>
+
+        <main class="space-y-16">
+            
+            <section id="live-dashboard">
+                <div class="glass-card rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-center mb-6 text-glow">Giám Sát & Giao Dịch</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="lg:col-span-1 space-y-4">
+                            <div class="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                <label for="connectedWallet" class="font-semibold text-gray-300">Kết Nối Ví:</label>
+                                <select id="connectedWallet" class="web3-input w-full mt-1 p-3 rounded-lg outline-none">
+                                    <option value="safe-wallet">safe-wallet</option>
+                                    <option value="suspicious-wallet">suspicious-wallet</option>
+                                    <option value="risky-wallet">risky-wallet</option>
+                                    <option value="new-user-wallet">new-user-wallet</option>
+                                </select>
+                            </div>
+                            <div class="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                <h4 class="font-bold text-gray-400 mb-2">Trạng Thái Ví</h4>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-300">Cấp Độ Rủi Ro:</span>
+                                    <span id="walletRiskStatus" class="font-bold px-2 py-1 rounded-full text-sm"></span>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="text-gray-300">Trạng Thái Đóng Băng:</span>
+                                    <span id="walletFrozenStatus" class="font-bold"></span>
+                                </div>
+                            </div>
+                             <div class="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                <h4 class="font-bold text-gray-400 mb-2">Bộ Đếm Hành Vi Nghi Ngờ</h4>
+                                <div class="w-full progress-bar-bg rounded-full h-2.5">
+                                    <div id="suspiciousCountBar" class="bg-yellow-400 h-2.5 rounded-full progress-bar-fg"></div>
+                                </div>
+                                <p id="suspiciousCountText" class="text-right text-sm mt-1 text-gray-400"></p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                            <h3 class="text-xl font-bold text-center mb-4 text-glow">Mô Phỏng Giao Dịch</h3>
+                             <div class="space-y-4">
+                                <div>
+                                    <label for="recipientWallet" class="font-semibold text-gray-300">Ví Nhận:</label>
+                                    <input type="text" id="recipientWallet" class="web3-input w-full mt-1 p-3 rounded-lg outline-none" placeholder="Nhập địa chỉ ví nhận">
+                                </div>
+                                <div>
+                                    <label for="amount" class="font-semibold text-gray-300">Số Tiền (ETH):</label>
+                                    <input type="number" id="amount" class="web3-input w-full mt-1 p-3 rounded-lg outline-none" placeholder="Ngưỡng nghi ngờ: 10 ETH. Tần suất nghi ngờ: >3 tx/phút">
+                                </div>
+                                <button id="sendTxBtn" class="w-full web3-btn text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                                    Gửi Giao Dịch
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="transaction-history">
+                <div class="glass-card rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-glow">Lịch Sử Giao Dịch Của Ví Đã Kết Nối 📓</h2>
+                    <div id="historyContainer" class="mt-6 max-h-96 overflow-y-auto space-y-4 pr-2">
+                        <p id="no-history-msg" class="text-center text-gray-500">Chưa có giao dịch nào được thực hiện cho ví này.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="ai-analysis">
+                <div class="glass-card rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-glow">Phân Tích Ví Bằng AI (Off-chain) ✨</h2>
+                    <p class="text-center max-w-2xl mx-auto text-gray-400 mb-8">
+                        Sử dụng Gemini để có một góc nhìn khác về rủi ro của một địa chỉ ví, dựa trên phân tích hành vi mô phỏng.
+                    </p>
+                    <div class="max-w-xl mx-auto">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="walletAddressInput" class="web3-input flex-grow p-3 rounded-lg outline-none" placeholder="Nhập địa chỉ ví, ví dụ: risky-wallet">
+                            <button id="analyzeWalletBtn" class="web3-btn text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                                Phân Tích với AI ✨
+                            </button>
+                        </div>
+                        <div id="aiLoader" class="loader hidden"></div>
+                        <div id="aiResultContainer" class="mt-6 p-4 border-2 rounded-lg bg-slate-900/50 hidden">
+                            <h4 id="aiResultTitle" class="font-bold text-lg mb-2"></h4>
+                            <p id="aiResultContent" class="text-gray-300 whitespace-pre-wrap"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center py-12 mt-8 border-t border-slate-800">
+             <a href="./index.html" class="text-cyan-400 hover:text-cyan-300 transition-colors">← Quay Lại Trang Chủ</a>
+        </footer>
+    </div>
+    
+    <div id="tx-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="tx-modal-loader" class="loader"></div>
+            <div id="tx-modal-result" class="hidden">
+                 <div id="tx-modal-icon" class="text-6xl mb-4"></div>
+                 <h3 id="tx-modal-title" class="text-2xl font-bold mb-2"></h3>
+                 <p id="tx-modal-message" class="text-gray-400 mb-6"></p>
+                 <button id="close-tx-modal-btn" class="web3-btn text-white font-bold py-2 px-6 rounded-lg">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const SIMULATION_CONFIG = {
+        suspiciousThreshold: 10,
+        suspiciousLimit: 3,
+        suspiciousResetDays: 7,
+        frequencyLimit: 3, 
+        frequencyWindowSeconds: 60, 
+    };
+
+    const getInitialWallets = () => ({
+        'safe-wallet': { risk: 'Safe', frozen: false, whitelist: false, suspiciousCount: 0, lastSuspiciousTime: 0, history: [], timestamps: [] },
+        'suspicious-wallet': { risk: 'Suspicious', frozen: false, whitelist: false, suspiciousCount: 1, lastSuspiciousTime: 0, history: [], timestamps: [] },
+        'risky-wallet': { risk: 'Blacklisted', frozen: false, whitelist: false, suspiciousCount: 3, lastSuspiciousTime: 0, history: [], timestamps: [] },
+        'new-user-wallet': { risk: 'Safe', frozen: false, whitelist: false, suspiciousCount: 0, lastSuspiciousTime: 0, history: [], timestamps: [] },
+        'partner-wallet': { risk: 'Safe', frozen: false, whitelist: true, suspiciousCount: 0, history: [], timestamps: [] }
+    });
+
+    let wallets = JSON.parse(localStorage.getItem('detectusWallets')) || getInitialWallets();
+    
+    function saveWallets() {
+        localStorage.setItem('detectusWallets', JSON.stringify(wallets));
+    }
+
+    const connectedWalletSelect = document.getElementById('connectedWallet');
+    const walletRiskStatus = document.getElementById('walletRiskStatus');
+    const walletFrozenStatus = document.getElementById('walletFrozenStatus');
+    const suspiciousCountBar = document.getElementById('suspiciousCountBar');
+    const suspiciousCountText = document.getElementById('suspiciousCountText');
+    const historyContainer = document.getElementById('historyContainer');
+    const noHistoryMsg = document.getElementById('no-history-msg');
+    
+    function updateDashboard(walletId) {
+        const wallet = wallets[walletId];
+        if (!wallet) return;
+
+        walletRiskStatus.textContent = wallet.risk;
+        walletFrozenStatus.textContent = wallet.frozen ? 'Bị Đóng Băng' : 'Hoạt Động';
+
+        switch(wallet.risk) {
+            case 'Safe': walletRiskStatus.className = 'font-bold px-2 py-1 rounded-full text-sm bg-teal-900/80 text-teal-300'; break;
+            case 'Suspicious': walletRiskStatus.className = 'font-bold px-2 py-1 rounded-full text-sm bg-yellow-900/80 text-yellow-300'; break;
+            case 'Blacklisted': walletRiskStatus.className = 'font-bold px-2 py-1 rounded-full text-sm bg-red-900/80 text-red-400'; break;
+        }
+        walletFrozenStatus.className = wallet.frozen ? 'font-bold text-red-400' : 'font-bold text-teal-300';
+
+        const suspiciousPercentage = (wallet.suspiciousCount / SIMULATION_CONFIG.suspiciousLimit) * 100;
+        suspiciousCountBar.style.width = `${Math.min(suspiciousPercentage, 100)}%`;
+        suspiciousCountText.textContent = `${wallet.suspiciousCount} / ${SIMULATION_CONFIG.suspiciousLimit} lần vi phạm`;
+        
+        renderTransactionHistory(walletId);
+    }
+
+    function renderTransactionHistory(walletId) {
+        const history = wallets[walletId].history;
+        if (history.length === 0) {
+            noHistoryMsg.classList.remove('hidden');
+            historyContainer.innerHTML = '';
+            historyContainer.appendChild(noHistoryMsg);
+        } else {
+            noHistoryMsg.classList.add('hidden');
+            historyContainer.innerHTML = '';
+            history.slice().reverse().forEach(tx => {
+                let statusClass, statusIcon;
+                switch(tx.status) {
+                    case 'Thành Công': statusClass = 'text-teal-300 bg-teal-900/50'; statusIcon = '✅'; break;
+                    case 'Bị Cảnh Báo': statusClass = 'text-yellow-300 bg-yellow-900/50'; statusIcon = '⚠️'; break;
+                    case 'Bị Chặn': statusClass = 'text-red-400 bg-red-900/50'; statusIcon = '🚫'; break;
+                }
+                const txElement = document.createElement('div');
+                txElement.className = 'p-4 rounded-lg border border-slate-700 bg-slate-800/50 flex items-start gap-4';
+                txElement.innerHTML = `
+                    <div class="text-2xl pt-1">${statusIcon}</div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center">
+                            <p class="font-bold text-lg text-white">${tx.amount} ETH</p>
+                            <span class="text-xs font-semibold px-2 py-1 rounded-full ${statusClass}">${tx.status}</span>
+                        </div>
+                        <p class="text-sm text-gray-400 break-all"><b class="text-gray-500">Từ:</b> ${tx.sender}</p>
+                        <p class="text-sm text-gray-400 break-all"><b class="text-gray-500">Đến:</b> ${tx.recipient}</p>
+                        <p class="text-xs text-gray-500 mt-2">${tx.timestamp}</p>
+                    </div>`;
+                historyContainer.appendChild(txElement);
+            });
+        }
+    }
+
+    connectedWalletSelect.addEventListener('change', (e) => {
+        updateDashboard(e.target.value);
+    });
+
+    const sendTxBtn = document.getElementById('sendTxBtn');
+    const txModal = document.getElementById('tx-modal');
+    const txModalLoader = document.getElementById('tx-modal-loader');
+    const txModalResult = document.getElementById('tx-modal-result');
+    const txModalIcon = document.getElementById('tx-modal-icon');
+    const txModalTitle = document.getElementById('tx-modal-title');
+    const txModalMessage = document.getElementById('tx-modal-message');
+    const closeTxModalBtn = document.getElementById('close-tx-modal-btn');
+
+    sendTxBtn.addEventListener('click', () => {
+        const senderId = connectedWalletSelect.value;
+        const recipientId = document.getElementById('recipientWallet').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        
+        if (!recipientId || isNaN(amount) || amount <= 0) {
+            alert("Vui lòng nhập đầy đủ và hợp lệ thông tin Ví Nhận và Số Tiền.");
+            return;
+        }
+
+        txModal.classList.remove('hidden');
+        txModalLoader.classList.remove('hidden');
+        txModalResult.classList.add('hidden');
+
+        setTimeout(() => {
+            txModalLoader.classList.add('hidden');
+            txModalResult.classList.remove('hidden');
+            
+            const senderWallet = wallets[senderId];
+            let txStatus, modalIcon, modalTitle, modalTitleClass, modalMessage;
+            
+            if (senderWallet.whitelist) {
+                txStatus = 'Thành Công';
+                modalIcon = '✅';
+                modalTitle = 'Giao Dịch Whitelist';
+                modalTitleClass = 'text-2xl font-bold mb-2 text-teal-400';
+                modalMessage = `Giao dịch ${amount} ETH đã thành công. Ví gửi nằm trong Whitelist nên được bỏ qua kiểm tra rủi ro.`;
+            } else if (senderWallet.frozen || senderWallet.risk === 'Blacklisted') {
+                txStatus = 'Bị Chặn';
+                modalIcon = '�';
+                modalTitle = 'Giao Dịch Bị Chặn';
+                modalTitleClass = 'text-2xl font-bold mb-2 text-red-400';
+                modalMessage = `Giao dịch đã bị chặn. Ví gửi đang ở trạng thái ${senderWallet.risk === 'Blacklisted' ? 'Blacklisted' : 'Bị Đóng Băng'}.`;
+            } else {
+                const now = Date.now();
+                senderWallet.timestamps.push(now);
+                senderWallet.timestamps = senderWallet.timestamps.filter(ts => now - ts < SIMULATION_CONFIG.frequencyWindowSeconds * 1000);
+                
+                const isFrequent = senderWallet.timestamps.length > SIMULATION_CONFIG.frequencyLimit;
+                const isHighValue = amount >= SIMULATION_CONFIG.suspiciousThreshold;
+                let isSuspicious = isFrequent || isHighValue;
+                
+                let reason = "";
+                if (isHighValue && isFrequent) reason = "vượt ngưỡng giá trị và tần suất giao dịch cao";
+                else if (isHighValue) reason = "vượt ngưỡng giá trị giao dịch";
+                else if (isFrequent) reason = "có tần suất giao dịch cao bất thường";
+
+                if (isSuspicious) {
+                    senderWallet.suspiciousCount++;
+                    senderWallet.lastSuspiciousTime = Date.now();
+                }
+
+                if (senderWallet.suspiciousCount >= SIMULATION_CONFIG.suspiciousLimit) {
+                    senderWallet.risk = 'Blacklisted';
+                } else if (senderWallet.suspiciousCount > 0) {
+                    senderWallet.risk = 'Suspicious';
+                }
+
+                if (!isSuspicious) {
+                    txStatus = 'Thành Công';
+                    modalIcon = '✅';
+                    modalTitle = 'Giao Dịch Thành Công';
+                    modalTitleClass = 'text-2xl font-bold mb-2 text-teal-400';
+                    modalMessage = `Giao dịch ${amount} ETH đến ví ${recipientId} đã được xác nhận.`;
+                } else {
+                    txStatus = 'Bị Cảnh Báo';
+                    modalIcon = '⚠️';
+                    modalTitle = 'Giao Dịch Bị Cảnh Báo';
+                    modalTitleClass = 'text-2xl font-bold mb-2 text-yellow-400';
+                    modalMessage = `Giao dịch ${amount} ETH đã thành công, nhưng bị gắn cờ 'Đáng Ngờ' do ${reason}. Bộ đếm vi phạm của bạn đã tăng lên.`;
+                }
+            }
+            
+            txModalIcon.textContent = modalIcon;
+            txModalTitle.textContent = modalTitle;
+            txModalTitle.className = modalTitleClass;
+            txModalMessage.textContent = modalMessage;
+
+            const newTx = {
+                sender: senderId,
+                recipient: recipientId,
+                amount,
+                status: txStatus,
+                timestamp: new Date().toLocaleString('vi-VN')
+            };
+            
+            senderWallet.history.push(newTx);
+            if (wallets[recipientId]) {
+                 if (!wallets[recipientId].history) wallets[recipientId].history = [];
+                wallets[recipientId].history.push(newTx);
+            }
+            
+            saveWallets();
+            updateDashboard(senderId);
+
+        }, 1500);
+    });
+    
+    closeTxModalBtn.addEventListener('click', () => {
+        txModal.classList.add('hidden');
+    });
+
+    updateDashboard(connectedWalletSelect.value);
+    
+    const analyzeWalletBtn = document.getElementById('analyzeWalletBtn');
+    const walletAddressInput = document.getElementById('walletAddressInput');
+    const aiLoader = document.getElementById('aiLoader');
+    const aiResultContainer = document.getElementById('aiResultContainer');
+    const aiResultTitle = document.getElementById('aiResultTitle');
+    const aiResultContent = document.getElementById('aiResultContent');
+
+    const walletProfiles = {
+        'safe-wallet': {
+            history: "Lịch sử giao dịch: Nắm giữ dài hạn, swap thường xuyên trên các DEX nổi tiếng như Uniswap, thỉnh thoảng mua NFT từ OpenSea. Không có tương tác với các dịch vụ trộn tiền (mixer) hoặc các địa chỉ bị gắn cờ.",
+            risk: "An Toàn",
+            borderColor: "border-teal-400"
+        },
+        'suspicious-wallet': {
+            history: "Lịch sử giao dịch: Nhận một khoản tiền lớn từ một nguồn không xác định, sau đó ngay lập tức phân phối đến nhiều ví mới theo một mô hình giống như 'smurfing' (chia nhỏ). Đã tương tác với một hợp đồng thông minh mới được triển khai, chưa được xác minh.",
+            risk: "Đáng Ngờ",
+            borderColor: "border-yellow-400"
+        },
+        'risky-wallet': {
+            history: "Lịch sử giao dịch: Tương tác trực tiếp với Tornado Cash (một dịch vụ trộn tiền đã biết). Nhận tiền từ một địa chỉ liên quan đến vụ hack của Lazarus Group. Gửi tiền đến một sàn giao dịch có chính sách KYC/AML yếu.",
+            risk: "Rủi Ro Cao",
+            borderColor: "border-red-400"
+        }
+    };
+
+    analyzeWalletBtn.addEventListener('click', async () => {
+        const walletAddress = walletAddressInput.value.trim().toLowerCase();
+        if (!walletAddress) {
+            aiResultTitle.textContent = "Lỗi";
+            aiResultContent.textContent = "Vui lòng nhập một địa chỉ ví.";
+            aiResultContainer.classList.remove('hidden');
+            aiResultContainer.className = 'mt-6 p-4 border-2 rounded-lg bg-slate-900/50 border-slate-700';
+            return;
+        }
+
+        let profile = walletProfiles[walletAddress];
+        if (!profile) {
+            const keys = Object.keys(walletProfiles);
+            profile = walletProfiles[keys[Math.floor(Math.random() * keys.length)]];
+        }
+        
+        aiLoader.classList.remove('hidden');
+        aiResultContainer.classList.add('hidden');
+
+        const prompt = `Bạn là một chuyên gia phân tích an ninh blockchain. Phân tích lịch sử giao dịch mô phỏng sau đây cho địa chỉ ví "${walletAddress}" và đưa ra một bản đánh giá rủi ro chi tiết nhưng dễ hiểu cho người dùng cuối. Giải thích lý do của bạn dựa trên các mẫu hành vi.
+        
+        Lịch sử giao dịch mô phỏng:
+        ${profile.history}
+        
+        Dựa trên những mẫu này, hãy cung cấp:
+        1. Một kết luận rõ ràng về mức độ rủi ro (An Toàn, Đáng Ngờ, hoặc Rủi Ro Cao).
+        2. Một đoạn giải thích ngắn gọn (2-3 câu) về các dấu hiệu chính bạn đã xác định.
+        3. Các đề xuất hành động cho người dùng nếu họ định tương tác với ví này.
+        
+        Hãy trình bày câu trả lời bằng tiếng Việt.`;
+
+        try {
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            
+            let text = 'Không thể lấy được phân tích. Vui lòng thử lại.';
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                text = result.candidates[0].content.parts[0].text;
+            }
+            
+            aiResultTitle.textContent = `Kết Quả Phân Tích cho Ví: ${profile.risk}`;
+            aiResultContent.textContent = text;
+            aiResultContainer.className = `mt-6 p-4 border-2 rounded-lg bg-slate-900/50 ${profile.borderColor}`;
+
+        } catch (error) {
+            console.error("Error calling Gemini API:", error);
+            aiResultTitle.textContent = "Lỗi Phân Tích";
+            aiResultContent.textContent = "Đã xảy ra sự cố khi kết nối với dịch vụ AI. Vui lòng thử lại sau.";
+            aiResultContainer.className = 'mt-6 p-4 border-2 rounded-lg bg-slate-900/50 border-red-500';
+        } finally {
+            aiLoader.classList.add('hidden');
+            aiResultContainer.classList.remove('hidden');
+        }
+    });
+
+    const background = document.getElementById('background-animation');
+    const starCount = 150;
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.animationDelay = `${Math.random() * 10}s`;
+        star.style.animationDuration = `${Math.random() * 5 + 5}s`;
+        background.appendChild(star);
+    }
+});
+</script>
+</body>
+</html>

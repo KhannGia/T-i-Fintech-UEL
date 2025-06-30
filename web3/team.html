@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detectus - Đội Ngũ Phát Triển</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #E6EDF3;
+            overflow-x: hidden;
+        }
+        .text-header {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        .team-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+        .image-container {
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* --- Hiệu ứng cuộn chuột --- */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-animate.visible .animate-child {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .animate-child {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out 0.3s, transform 0.6s ease-out 0.3s;
+        }
+
+        /* --- Hiệu ứng làm nổi bật Leader --- */
+        .leader-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.08), transparent 70%);
+            z-index: -1;
+        }
+        .leader-image-container {
+            animation: pulse-border 2.5s infinite;
+        }
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0px rgba(251, 191, 36, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 0 15px rgba(251, 191, 36, 0);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <main>
+        <!-- Header Section -->
+        <section class="min-h-screen flex flex-col justify-center items-center text-center p-8">
+             <h1 class="text-4xl md:text-6xl font-bold text-white text-header mb-4">Introducing Our Dedicated <br/> Team Members</h1>
+             <p class="text-lg md:text-xl text-gray-400 max-w-2xl">
+                 Each member brings unique expertise and energy to every project, combining creativity and code to deliver high-performance results.
+             </p>
+             <div class="mt-12 text-gray-500 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+             </div>
+        </section>
+
+        <!-- Leader: Tran Gia Khanh -->
+        <section class="team-section scroll-animate leader-section">
+            <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center">
+                <div class="image-container animate-child leader-image-container">
+                     <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/800x600/111827/4b5563?text=Image+Not+Found';" alt="Trần Gia Khanh đang lãnh đạo dự án">
+                </div>
+                <div class="text-content animate-child md:pl-8">
+                    <div class="flex items-baseline gap-4 mb-2">
+                        <h2 class="text-3xl md:text-4xl font-bold text-amber-400 text-header">
+                            Trần Gia Khanh <span class="text-3xl font-semibold text-amber-200/90">(Leader)</span>
+                        </h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-300 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M18 8a6 6 0 01-7.743 5.743L10 14l-0.257-0.257A6 6 0 1118 8zM10 6a4 4 0 100 8 4 4 0 000-8zM2.25 8.25a.75.75 0 000 1.5h15.5a.75.75 0 000-1.5H2.25z" />
+                            <path d="M4.5 5.232l1.636-1.227a.75.75 0 01.912 1.18l-1.636 1.227a.75.75 0 01-.912-1.18zM15.5 5.232l-1.636-1.227a.75.75 0 00-.912 1.18l1.636 1.227a.75.75 0 00.912-1.18zM8.364 2.25a.75.75 0 01.75-.75h2a.75.75 0 010 1.5h-2a.75.75 0 01-.75-.75z" />
+                        </svg>
+                    </div>
+                    <p class="text-xl md:text-2xl font-semibold text-blue-400 mb-6">Smart Contract Developer</p>
+                    <p class="text-gray-300 mb-6">
+                        Dẫn dắt định hướng dự án, đồng thời trực tiếp phát triển Smart Contract, xây dựng logic on-chain và đảm bảo an ninh cho hệ thống.
+                    </p>
+                    <ul class="space-y-3 text-gray-200">
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Product Vision & Team Leadership</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Solidity & On-chain Logic</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Blockchain Security Auditing</li>
+                    </ul>
+                    <div class="mt-8">
+                        <a href="https://www.facebook.com/Khangiaa" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-lg">
+                            <span>Let's Connect</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L10 8.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Member: Ninh Minh Phu -->
+        <section class="team-section scroll-animate">
+            <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center">
+                <div class="text-content animate-child md:pr-8 md:order-last">
+                    <h2 class="text-3xl md:text-4xl font-bold text-cyan-400 mb-2 text-header">Ninh Minh Phú</h2>
+                    <p class="text-xl font-semibold text-blue-400 mb-6">Brand & Visual Designer</p>
+                    <p class="text-gray-300 mb-6">
+                        Kiến tạo trải nghiệm số bằng cách kết hợp thẩm mỹ thiết kế với chiến lược thương hiệu, chuyển hóa ý tưởng thành nhận diện hình ảnh và framework website nhất quán.
+                    </p>
+                     <ul class="space-y-3 text-gray-200">
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Brand-Driven Design Direction</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Strategic Color Systems & Visual Identity</li>
+                     </ul>
+                    <div class="mt-8">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-lg">
+                           <span>Let's Connect</span>
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L10 8.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="image-container animate-child">
+                    <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1974&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/800x600/111827/4b5563?text=Image+Not+Found';" alt="Ninh Minh Phú đang nghiên cứu thiết kế">
+                </div>
+            </div>
+        </section>
+
+        <!-- Member: Nguyen Tuan Kiet -->
+        <section class="team-section scroll-animate">
+            <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center">
+                <div class="image-container animate-child">
+                    <img src="https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=2071&auto=format&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/800x600/111827/4b5563?text=Image+Not+Found';" alt="Nguyễn Tuấn Kiệt đang thiết kế UI/UX">
+                </div>
+                <div class="text-content animate-child md:pl-8">
+                     <h2 class="text-3xl md:text-4xl font-bold text-cyan-400 mb-2 text-header">Nguyễn Tuấn Kiệt</h2>
+                    <p class="text-xl font-semibold text-blue-400 mb-6">Frontend Developer</p>
+                    <p class="text-gray-300 mb-6">
+                       Phụ trách xây dựng giao diện người dùng (UI/UX), phát triển front-end và tích hợp với các dịch vụ off-chain để mang lại trải nghiệm tốt nhất.
+                    </p>
+                     <ul class="space-y-3 text-gray-200">
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Responsive Web Design</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Interactive UI Components</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>API Integration</li>
+                    </ul>
+                    <div class="mt-8">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 shadow-lg">
+                           <span>Let's Connect</span>
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L10 8.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="text-center py-12">
+        <a href="./index.html" class="text-cyan-400 hover:text-cyan-300 transition-colors text-header">← Quay Lại Trang Chủ</a>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Logic cho hiệu ứng cuộn chuột
+    const animatedElements = document.querySelectorAll('.scroll-animate');
+    
+    if (animatedElements.length > 0) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // Khi phần tử đi vào viewport
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                } 
+                // Optional: Xóa class khi phần tử đi ra ngoài để hiệu ứng lặp lại
+                else {
+                    entry.target.classList.remove('visible');
+                }
+            }); 
+        }, {
+            threshold: 0.2 // Kích hoạt khi 20% phần tử hiện ra
+        });
+
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
+    }
+});
+</script>
+</body>
+</html>

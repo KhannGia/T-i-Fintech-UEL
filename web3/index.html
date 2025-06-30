@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detectus - Giám Sát Rủi Ro Blockchain</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Chakra Petch', sans-serif;
+            background-color: #0D1117;
+            color: #E6EDF3;
+            background-image:
+                linear-gradient(rgba(13, 17, 23, 0.98), rgba(13, 17, 23, 0.98));
+            overflow-x: hidden;
+        }
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: #58A6FF;
+            border-radius: 50%;
+            opacity: 0;
+            animation: animate-star 10s linear infinite;
+        }
+        @keyframes animate-star {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            20%, 80% { opacity: 0.7; }
+            100% { opacity: 0; transform: translateY(-100px) scale(1); }
+        }
+        .glass-card {
+            background-color: rgba(22, 27, 34, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 148, 158, 0.2);
+        }
+        .text-glow {
+            color: #58A6FF;
+            text-shadow: 0 0 8px #58A6FF60;
+        }
+        .flow-arrow::after {
+            content: '↓';
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #58A6FF;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 8px #58A6FF60;
+        }
+        .web3-btn {
+            background: linear-gradient(90deg, #0052CC, #4C9AFF);
+            border: none;
+            box-shadow: 0 0 15px #4C9AFF80;
+            transition: all 0.3s ease;
+        }
+        .web3-btn:hover {
+            box-shadow: 0 0 25px #4C9AFFAA;
+            transform: translateY(-2px);
+        }
+        
+        /* --- Cải thiện cho Feature Card --- */
+        .feature-card {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 0 25px rgba(88, 166, 255, 0.2);
+        }
+        .feature-card.active {
+            border-color: #58A6FF;
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px #58A6FF30;
+        }
+        .plus-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            color: rgba(230, 237, 243, 0.4);
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover .plus-icon,
+        .feature-card.active .plus-icon {
+            transform: rotate(45deg);
+            color: rgba(230, 237, 243, 0.9);
+        }
+        .detail-view { display: none; }
+        .detail-view.active { display: block; animation: fadeInGeneral 0.5s ease-in-out; }
+        
+        /* --- Hiệu ứng cuộn chuột --- */
+        .scroll-animate {
+            opacity: 0;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .from-bottom { transform: translateY(40px); }
+        .from-left { transform: translateX(-40px); }
+        .from-right { transform: translateX(40px); }
+        
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0) translateX(0);
+        }
+        
+        /* --- Roadmap Styles --- */
+        .timeline-item-wrapper { cursor: pointer; transition: transform 0.2s ease; }
+        .timeline-item-wrapper:hover { transform: scale(1.02); }
+        .timeline-icon { transition: all 0.3s ease; }
+        .timeline-item-wrapper.active .timeline-icon { transform: scale(1.2); box-shadow: 0 0 20px var(--tw-shadow-color); }
+        .roadmap-details { display: none; }
+        .roadmap-details.active { display: grid; }
+        
+        /* --- Hiệu ứng xuất hiện chi tiết Lộ trình --- */
+        .roadmap-detail-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.5s forwards ease-out;
+        }
+        .roadmap-details.active .roadmap-detail-card:nth-child(1) { animation-delay: 0.1s; }
+        .roadmap-details.active .roadmap-detail-card:nth-child(2) { animation-delay: 0.2s; }
+        .roadmap-details.active .roadmap-detail-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInSlideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInGeneral {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="background-animation"></div>
+    <div class="container mx-auto p-4 md:p-8 relative z-10">
+
+        <header class="text-center py-12 relative">
+            <div class="absolute top-4 right-4 md:top-8 md:right-8 flex flex-col sm:flex-row gap-3">
+                <a href="./admin.html" class="bg-red-800/60 backdrop-blur-sm border border-red-600 hover:bg-red-700/80 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm flex items-center gap-2 justify-center">
+                    <span>⚙️</span>
+                    <span class="whitespace-nowrap">Admin Function</span>
+                </a>
+                <a href="./team.html" class="bg-gray-700/50 backdrop-blur-sm border border-gray-600 hover:bg-gray-600/70 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm flex items-center gap-2 justify-center">
+                    <span>👥</span>
+                    <span class="whitespace-nowrap">Thành viên</span>
+                </a>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-bold text-glow leading-tight tracking-wider mt-16 sm:mt-0">DETECTUS</h1>
+            <p class="text-xl md:text-2xl font-semibold mt-2 text-gray-300">Trace the Threat, Break the Chain.</p>
+            <p class="max-w-3xl mx-auto mt-4 text-lg text-gray-400">
+                Giải pháp giám sát thông minh được thiết kế để phát hiện và vô hiệu hóa các mối đe dọa tài chính, hành vi rửa tiền và ví độc hại trong môi trường DeFi theo thời gian thực.
+            </p>
+        </header>
+
+        <main class="space-y-24">
+
+            <section id="cta" class="scroll-animate from-bottom">
+                <div class="glass-card rounded-xl shadow-lg p-8 text-center">
+                    <h2 class="text-3xl font-bold text-glow mb-4">Trải Nghiệm Sức Mạnh Của Detectus</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto mb-6">
+                        Tương tác với bảng điều khiển mô phỏng để hiểu cách hệ thống của chúng tôi phân tích, cảnh báo và chặn các giao dịch rủi ro trong thời gian thực.
+                    </p>
+                    <a href="./app.html" class="web3-btn text-white font-bold py-3 px-8 rounded-lg inline-block">
+                        Mở Bảng Điều Khiển Ứng Dụng →
+                    </a>
+                </div>
+            </section>
+            
+            <section id="features" class="scroll-animate from-bottom">
+                <h2 class="text-3xl font-bold text-center mb-8 text-glow">Các Tính Năng Cốt Lõi</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="feature-card-1" data-target="detail-1" class="feature-card glass-card rounded-xl p-6 text-center">
+                        <div class="plus-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg></div>
+                        <div class="text-5xl mb-4">⛓️</div>
+                        <h3 class="text-xl font-bold mb-2 text-cyan-400">Phân Tích Chuỗi Giao Dịch</h3>
+                        <p class="text-gray-400">Truy vết luồng tài sản giữa các ví để tái dựng và phân tích chuỗi giao dịch.</p>
+                    </div>
+                     <div id="feature-card-2" data-target="detail-2" class="feature-card glass-card rounded-xl p-6 text-center">
+                        <div class="plus-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg></div>
+                        <div class="text-5xl mb-4">🔔</div>
+                        <h3 class="text-xl font-bold mb-2 text-cyan-400">Cảnh Báo Thời Gian Thực</h3>
+                        <p class="text-gray-400">Phản ứng ngay lập tức với các hành vi đáng ngờ thông qua các sự kiện on-chain.</p>
+                    </div>
+                    <div id="feature-card-3" data-target="detail-3" class="feature-card glass-card rounded-xl p-6 text-center">
+                        <div class="plus-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg></div>
+                        <div class="text-5xl mb-4">🕵️</div>
+                        <h3 class="text-xl font-bold mb-2 text-cyan-400">Nhận Diện Hành Vi Bất Thường</h3>
+                        <p class="text-gray-400">Sử dụng các quy tắc để xác định các kỹ thuật rửa tiền và hành vi lẩn tránh.</p>
+                    </div>
+                    <div id="feature-card-4" data-target="detail-4" class="feature-card glass-card rounded-xl p-6 text-center">
+                        <div class="plus-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg></div>
+                        <div class="text-5xl mb-4">💯</div>
+                        <h3 class="text-xl font-bold mb-2 text-cyan-400">Chấm Điểm Tin Cậy Ví</h3>
+                        <p class="text-gray-400">Tự động phân loại người dùng theo mức độ rủi ro dựa trên hành vi giao dịch.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="feature-details-display" class="hidden from-bottom">
+                <div class="glass-card rounded-xl shadow-lg p-6 md:p-8">
+                    <!-- Detail view 1 -->
+                    <div id="detail-1" class="detail-view">
+                        <h3 class="text-2xl font-bold text-glow mb-4">Cơ Chế: Phân Tích Chuỗi Giao Dịch</h3>
+                        <p class="text-gray-300 mb-6">Mỗi giao dịch được giám sát sẽ được ghi lại vào một buffer vòng (circular buffer) cho cả người gửi và người nhận. Dữ liệu này cho phép hệ thống truy vết và tái tạo lại luồng tiền, giúp phát hiện các mạng lưới ví liên kết với nhau hoặc các hành vi rửa tiền phức tạp.</p>
+                    </div>
+                    <!-- Detail view 2 -->
+                    <div id="detail-2" class="detail-view">
+                        <h3 class="text-2xl font-bold text-glow mb-4">Cơ Chế: Cảnh Báo Thời Gian Thực</h3>
+                        <p class="text-gray-300 mb-6">Hợp đồng phát ra các sự kiện (events) on-chain mỗi khi có một hành động quan trọng xảy ra. Các hệ thống off-chain có thể lắng nghe những sự kiện này để gửi cảnh báo tức thì đến đội ngũ quản trị rủi ro hoặc kích hoạt các quy trình tự động.</p>
+                    </div>
+                    <!-- Detail view 3 -->
+                    <div id="detail-3" class="detail-view">
+                         <h3 class="text-2xl font-bold text-glow mb-4">Cơ Chế: Nhận Diện Hành Vi Bất Thường</h3>
+                        <p class="text-gray-300 mb-6">Hệ thống sử dụng các quy tắc được định sẵn để xác định một giao dịch có đáng ngờ hay không, kết hợp nhiều yếu tố như giá trị, tần suất và lịch sử giao dịch.</p>
+                    </div>
+                    <!-- Detail view 4 -->
+                    <div id="detail-4" class="detail-view">
+                        <h3 class="text-2xl font-bold text-glow mb-4">Cơ Chế: Chấm Điểm Tin Cậy Ví</h3>
+                        <p class="text-gray-300 mb-6">Hệ thống tự động nâng cấp hoặc hạ cấp mức độ rủi ro của một ví dựa trên hành vi của nó. Nếu vi phạm vượt quá giới hạn, ví sẽ bị đưa vào danh sách đen.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="how-it-works" class="scroll-animate from-bottom">
+                <div class="glass-card rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-glow">Luồng Logic Smart Contract</h2>
+                    <p class="text-center max-w-2xl mx-auto text-gray-400 mb-8">
+                        Mọi giao dịch đều được xử lý qua một quy trình giám sát chặt chẽ để phân tích, đánh giá và hành động, đảm bảo an toàn cho toàn bộ hệ sinh thái.
+                    </p>
+                    <div class="flex flex-col items-center text-center">
+                        <div class="p-4 bg-slate-800/70 rounded-lg shadow-sm w-full md:w-3/4 lg:w-1/2 border border-slate-700">
+                            <p class="font-bold text-lg">1. Bắt đầu giao dịch</p>
+                            <p class="text-sm text-gray-400">Người dùng gọi hàm `monitoredTransfer`</p>
+                            <p class="font-mono text-xs mt-1 bg-slate-700 text-cyan-400 px-2 py-1 rounded">monitoredTransfer() / monitoredTransferERC20()</p>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="p-4 bg-slate-800/70 rounded-lg shadow-sm w-full md:w-3/4 lg:w-1/2 border border-slate-700">
+                            <p class="font-bold text-lg">2. Logic Giám Sát Cốt Lõi</p>
+                            <p class="text-sm text-gray-400">Hệ thống gọi hàm nội bộ `_checkedTransfer`</p>
+                             <p class="font-mono text-xs mt-1 bg-slate-700 text-cyan-400 px-2 py-1 rounded">_checkedTransfer()</p>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="w-full md:w-3/4 lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                            <div class="p-3 bg-green-900/30 rounded-lg border-l-4 border-green-500">
+                                <p class="font-bold text-base text-green-400">2a. Whitelist?</p>
+                                <p class="text-sm text-gray-400">Nếu có, bỏ qua kiểm tra rủi ro. Ghi log an toàn.</p>
+                            </div>
+                            <div class="p-3 bg-red-900/30 rounded-lg border-l-4 border-red-500">
+                                <p class="font-bold text-base text-red-400">2b. Blacklist/Frozen?</p>
+                                <p class="text-sm text-gray-400">Nếu có, chặn giao dịch ngay lập tức.</p>
+                            </div>
+                        </div>
+                        <div class="flow-arrow"></div>
+                         <div class="p-4 bg-yellow-900/30 rounded-lg shadow-sm w-full md:w-3/4 lg:w-1/2 border border-yellow-500/50">
+                            <p class="font-bold text-lg text-yellow-400">3. Phân Tích Hành Vi</p>
+                            <p class="text-sm text-gray-400">Kiểm tra `suspiciousThreshold`, `dailyTransferSum` & Tần suất Giao dịch</p>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="p-4 bg-slate-800/70 rounded-lg shadow-sm w-full md:w-3/4 lg:w-1/2 border border-slate-700">
+                            <p class="font-bold text-lg">4. Phân Loại & Ghi Log</p>
+                            <p class="text-sm text-gray-400">Gán nhãn rủi ro, cập nhật `suspiciousTrack` và ghi `ActivityLog`</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Roadmap Section -->
+            <section>
+                <div class="glass-card rounded-xl shadow-lg py-12 px-6 md:px-8">
+                    <h2 class="text-3xl font-bold text-center mb-16 text-glow scroll-animate from-bottom">Lộ Trình Phát Triển</h2>
+                    
+                    <!-- Timeline -->
+                    <div class="relative max-w-4xl mx-auto" id="roadmap-timeline">
+                        <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-cyan-700/50 hidden md:block"></div>
+                        
+                        <!-- Stage 1: Short-term -->
+                        <div class="timeline-item-wrapper relative mb-12" data-target="stage1-details">
+                             <div class="scroll-animate from-right flex md:items-center w-full md:justify-between">
+                                <div class="hidden md:block md:w-5/12"></div>
+                                <div class="z-10 flex items-center timeline-icon bg-cyan-500 shadow-xl w-12 h-12 rounded-full justify-center text-2xl shadow-cyan-500/50 order-1 md:order-none">🚀</div>
+                                <div class="order-2 md:w-5/12 bg-slate-800/80 rounded-lg shadow-xl px-6 py-4 border-l-4 md:border-l-0 border-cyan-400">
+                                    <h3 class="font-bold text-cyan-300 text-xl mb-2">Giai đoạn 1: Nền tảng</h3>
+                                    <p class="text-sm text-gray-400">Hoàn thiện các tính năng cốt lõi và xây dựng thương hiệu.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stage 2: Mid-term -->
+                        <div class="timeline-item-wrapper relative mb-12" data-target="stage2-details">
+                             <div class="scroll-animate from-left flex md:items-center w-full md:justify-between md:flex-row-reverse">
+                                <div class="hidden md:block md:w-5/12"></div>
+                                <div class="z-10 flex items-center timeline-icon bg-green-500 shadow-xl w-12 h-12 rounded-full justify-center text-2xl shadow-green-500/50 order-1 md:order-none">📈</div>
+                                <div class="order-2 md:w-5/12 bg-slate-800/80 rounded-lg shadow-xl px-6 py-4 border-l-4 md:border-l-0 md:border-r-4 border-green-400">
+                                    <h3 class="font-bold text-green-300 text-xl mb-2">Giai đoạn 2: Thông minh hoá</h3>
+                                    <p class="text-sm text-gray-400">Tích hợp Heuristics và Học máy để nâng cao độ chính xác.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stage 3: Long-term -->
+                        <div class="timeline-item-wrapper relative mb-12" data-target="stage3-details">
+                             <div class="scroll-animate from-right flex md:items-center w-full md:justify-between">
+                                 <div class="hidden md:block md:w-5/12"></div>
+                                <div class="z-10 flex items-center timeline-icon bg-purple-500 shadow-xl w-12 h-12 rounded-full justify-center text-2xl shadow-purple-500/50 order-1 md:order-none">🌍</div>
+                                <div class="order-2 md:w-5/12 bg-slate-800/80 rounded-lg shadow-xl px-6 py-4 border-l-4 md:border-l-0 border-purple-400">
+                                    <h3 class="font-bold text-purple-300 text-xl mb-2">Tầm nhìn Dài hạn</h3>
+                                    <p class="text-sm text-gray-400">Trở thành một trụ cột an ninh không thể thiếu trong hệ sinh thái Web3.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Container -->
+                    <div id="roadmap-details-container" class="mt-8 max-w-5xl mx-auto">
+                        <!-- Content is injected here by JS -->
+                    </div>
+
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center py-12 mt-8 border-t border-slate-800">
+             <h3 class="text-xl font-bold text-glow">Đội Ngũ Phát Triển</h3>
+             <p class="text-gray-400 mt-2">Dự án được thực hiện bởi đội ngũ FINTECH UEL</p>
+             <div class="flex justify-center flex-wrap gap-x-8 gap-y-2 mt-4 text-gray-400">
+                <p><span class="font-semibold">Trần Gia Khanh</span> (Leader)</p>
+                <p><span class="font-semibold">Ninh Minh Phú</span></p>
+                <p><span class="font-semibold">Nguyễn Tuấn Kiệt</span></p>
+             </div>
+        </footer>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Scroll animation logic
+    const animatedElements = document.querySelectorAll('.scroll-animate');
+    if (animatedElements.length > 0) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+                else {
+                    entry.target.classList.remove('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        animatedElements.forEach(el => observer.observe(el));
+    }
+
+    // Feature cards interaction
+    const featureCards = document.querySelectorAll('.feature-card');
+    const featureDetailsDisplay = document.getElementById('feature-details-display');
+    const detailViews = document.querySelectorAll('.detail-view');
+
+    featureCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const targetId = card.getAttribute('data-target');
+            const targetDetailView = document.getElementById(targetId);
+            const wasActive = card.classList.contains('active');
+
+            featureCards.forEach(c => c.classList.remove('active'));
+            detailViews.forEach(v => v.classList.remove('active'));
+
+            if (!wasActive) {
+                card.classList.add('active');
+                featureDetailsDisplay.classList.remove('hidden');
+                featureDetailsDisplay.classList.add('visible'); 
+                if (targetDetailView) {
+                    targetDetailView.classList.add('active');
+                }
+            } else {
+                 featureDetailsDisplay.classList.add('hidden');
+            }
+        });
+    });
+
+    // Roadmap interaction logic
+    const timelineItems = document.querySelectorAll('.timeline-item-wrapper');
+    const detailsContainer = document.getElementById('roadmap-details-container');
+    const stageDetailsContent = {
+        'stage1-details': `<div class="roadmap-details active grid md:grid-cols-3 gap-8">
+            <div class="roadmap-detail-card bg-slate-900/50 p-6 rounded-lg border-t-2 border-purple-400">
+                <h4 class="font-bold text-xl text-purple-300 mb-2">Hoàn thiện Trust Scoring</h4>
+                <p class="text-sm text-gray-300">Xây dựng một thang điểm tin cậy chi tiết từ 0-100 cho mỗi địa chỉ ví. Phát triển dashboard trực quan cho phép người dùng theo dõi điểm số, lịch sử rủi ro và nhận các khuyến nghị hành động phù hợp.</p>
+            </div>
+            <div class="roadmap-detail-card bg-slate-900/50 p-6 rounded-lg border-t-2 border-purple-400">
+                <h4 class="font-bold text-xl text-purple-300 mb-2">Ra mắt Wallet Address Lookup</h4>
+                <p class="text-sm text-gray-300">Ra mắt công cụ tra cứu công khai, cho phép bất kỳ người dùng nào cũng có thể “check” độ uy tín và xem thông tin rủi ro cơ bản của một địa chỉ ví blockchain.</p>
+            </div>
+            <div class="roadmap-detail-card bg-slate-900/50 p-6 rounded-lg border-t-2 border-purple-400">
+                <h4 class="font-bold text-xl text-purple-300 mb-2">Xây dựng Smart API</h4>
+                <p class="text-sm text-gray-300">Cung cấp các API endpoint đầu tiên cho các dApp đối tác. Cho phép họ tích hợp và thực hiện kiểm tra rủi ro trước giao dịch (pre-transfer risk check) để bảo vệ người dùng.</p>
+            </div></div>`,
+        'stage2-details': `<div class="roadmap-details active grid md:grid-cols-2 gap-8">
+            <div class="roadmap-detail-card md:col-span-1 bg-slate-900/50 p-6 rounded-lg border-t-2 border-blue-400">
+                <h4 class="font-bold text-xl text-blue-300 mb-3">Lập hồ sơ Rủi ro theo Kinh nghiệm (Heuristics)</h4>
+                <p class="text-sm text-gray-300 mb-2"><strong class="text-gray-100">Mục tiêu:</strong> Chuyển từ các quy tắc cứng (hard-coded rules) sang một hệ thống đánh giá rủi ro linh hoạt hơn.</p>
+                <p class="text-sm text-gray-300"><strong class="text-gray-100">Cách tiếp cận:</strong> Đánh giá dựa trên sự kết hợp của nhiều yếu tố: tần suất, giá trị giao dịch, mối liên kết với các ví rủi ro, trạng thái whitelist/blacklist, v.v.</p>
+            </div>
+            <div class="roadmap-detail-card md:col-span-1 bg-slate-900/50 p-6 rounded-lg border-t-2 border-blue-400">
+                <h4 class="font-bold text-xl text-blue-300 mb-3">Tích hợp Thuật toán Học máy (ML)</h4>
+                <p class="text-sm text-gray-300"><strong class="text-gray-100">Cách tiếp cận:</strong> Huấn luyện các mô hình ML dựa trên dữ liệu on-chain để tự động nhận diện các mẫu rủi ro mới và các mạng lưới ví có liên kết đáng ngờ.</p>
+            </div></div>`,
+        'stage3-details': `<div class="roadmap-details active grid md:grid-cols-3 gap-8">
+            <div class="roadmap-detail-card bg-slate-900/50 p-6 rounded-lg border-t-2 border-yellow-400">
+                <h4 class="font-bold text-lg text-yellow-300 mb-2">Hub API An ninh</h4>
+                <p class="text-sm text-gray-300">Trở thành trung tâm API, cho phép mọi dự án dễ dàng tích hợp một lớp bảo mật mạnh mẽ.</p>
+            </div>
+            <div class="roadmap-detail-card bg-slate-900/50 p-6 rounded-lg border-t-2 border-yellow-400">
+                <h4 class="font-bold text-lg text-yellow-300 mb-2">Tiêu chuẩn Ngành</h4>
+                <p class="text-sm text-gray-300">Hướng tới việc Detectus được công nhận như một tiêu chuẩn an ninh.</p>
+            </div>
+            <div class="roadmap-detail-card bg-slate-900/50 p-6 rounded-lg border-t-2 border-yellow-400">
+                <h4 class="font-bold text-lg text-yellow-300 mb-2">Trao quyền cho Cộng đồng</h4>
+                <p class="text-sm text-gray-300">Cung cấp công cụ minh bạch để người dùng tự bảo vệ, thúc đẩy một cộng đồng có kiến thức.</p>
+            </div></div>`
+    };
+
+    // Set initial active state
+    if (timelineItems.length > 0) {
+        document.querySelector('.timeline-item-wrapper').classList.add('active');
+        detailsContainer.innerHTML = stageDetailsContent['stage1-details'];
+    }
+
+    timelineItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const targetId = e.currentTarget.dataset.target;
+            const wasActive = e.currentTarget.classList.contains('active');
+
+            timelineItems.forEach(i => i.classList.remove('active'));
+            detailsContainer.innerHTML = '';
+            
+            if (!wasActive) {
+                e.currentTarget.classList.add('active');
+                detailsContainer.innerHTML = stageDetailsContent[targetId] || '';
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
